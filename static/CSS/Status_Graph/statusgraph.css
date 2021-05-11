@@ -1,0 +1,54 @@
+    input,button{
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      border-radius:20px;
+    }
+
+
+    html, body
+    {
+    height: 90%;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    }
+
+    .spk-page-title {
+        text-align: center;
+        font-size: 26px;
+        margin-top: -16px;
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    }
+
+    .spk-leftSec {
+        width: 99%;
+        clear: both;
+        }
+
+
+    .preloader1 {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: 9999;
+       background-image: url('/static/GIF/Wedges-3s-200px.gif');
+       background-repeat: no-repeat; 
+       background-color: #FFF;
+       background-position: center;
+    }
+
+    .preloader2 {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: 9999;
+       background-image: url('/static/GIF/Double Ring-1s-200px.gif');
+       background-repeat: no-repeat; 
+       background-color: #FFF;
+       background-position: center;
+    }

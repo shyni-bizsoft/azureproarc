@@ -1,0 +1,555 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Project Index</title>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.2/jquery-ui.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.js"></script>
+<style>
+#chartdiv {
+width: 100%;
+height: 500px;
+}
+.ui-menu { background:#FFF !important; }
+.ui-menu li { list-style:circle; line-height:2em; padding:7px; }
+</style>
+
+<!-- Resources -->
+<script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+<script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+
+<script>
+jQuery(document).ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    function sameOrigin(url) {
+        // url could be relative or scheme relative or absolute
+        var host = document.location.host; // host + port
+        var protocol = document.location.protocol;
+        var sr_origin = '//' + host;
+        var origin = protocol + sr_origin;
+        // Allow absolute or scheme relative URLs to same origin
+        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+            // or any other URL that isn't scheme relative or absolute i.e relative.
+            !(/^(\/\/|http:|https:).*/.test(url));
+    }
+    function safeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+ if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+    }
+   
+});
+  $(function() {
+
+  var availableTags = [
+    "ActionScript", "AppleScript", "Asp", "BASIC", "C", "C++",
+    "Clojure", "COBOL", "ColdFusion", "Erlang", "Fortran",
+    "Groovy", "Haskell", "Java", "JavaScript", "Lisp", "Perl",
+    "PHP", "Python", "Ruby", "Scala", "Scheme"
+  ];
+  //alert($(".autocomplete").val());
+ //  return;
+  $(".autocomplete").autocomplete({
+    
+    //source: availableTags  
+    source: function(request, response) {
+      $('#divappenddata').empty(); 
+    var mm = ''+($(".autocomplete").val())+'%'; 
+    //console.log(mm);   
+    $.ajax({
+      url: '/ajaxcall_master_trs',
+      type: 'POST',
+      //contentType: 'application/json',
+      headers:{'x-CSRFToken':'{{ csrf_token }}'},
+      //contentType: 'application/json',
+      dataType: "json",
+      data: 
+      {
+       'searchStr' :JSON.stringify(mm)
+      },
+     
+      success: function(res) {       
+        if (res) {         
+          response($.map(res.hsn_code, function(item) {
+            //console.log(item[0]);            
+            return {
+              label: "" + "(" + item[1] + "-" +   item[2] +   item[3] + ")-" +                        
+                           item[4] +" ",
+              autoid: item[0]
+            }
+
+          }));
+
+        } 
+
+      }
+    });
+  },
+  select: function(event, ui) {
+      //alert("Selected ");
+      //$('#hidCidade').val(ui.item.value);
+     // $(this).val(ui.item.label);
+     //divappenddata
+     // autoid = ui.item.autoid;
+     var autoid = $("#hsncode").val()+'%'; 
+     //var autoid = ui.item.autoid+'%'; 
+     console.log(autoid)
+     //alert(autoid);
+     $('#divappenddata').empty();     
+
+     $.ajax({
+      url: '/ajaxcall_append',
+      type: 'POST',
+      headers:{'x-CSRFToken':'{{ csrf_token }}'},
+      //contentType: 'application/json',
+      dataType: "json",
+      data: 
+      {
+       'autoid' :JSON.stringify(autoid)
+      },
+      success: function(data1) {
+       //console.log(data);
+       if (data1) {         
+         $.map(data1.hsn_code, function(item) {           //console.log(item[0]);
+          
+
+           var html = '<tr>';
+           //html += '<td>'+item[0]+'</td>';
+           html += '<td>'+item[1]+'</td>';
+           html += '<td>'+item[2]+'</td>';
+           html += '<td>'+item[3]+'</td>';
+           html += '<td>'+item[4]+'</td>';
+           html += '<td><div style="height: 100px !important;" id="chartdiv"></div></td>';
+           html += '</tr>';
+           
+          $('#divappenddata').append(html);
+/*
+          am4core.ready(function() {
+      
+      // Themes begin
+      am4core.useTheme(am4themes_animated);
+      // Themes end
+      
+      // Create chart instance
+      var chart = am4core.create("chartdiv", am4charts.PieChart);
+      
+      // Add data
+      
+      chart.data = [ {
+        "HSNCODE": "2006",
+        "YEARS": item[6]
+      }, {
+        "HSNCODE": "2007",
+        "YEARS": item[7]
+      }, {
+        "HSNCODE": "2008",
+        "YEARS": item[8]
+      }, {
+        "HSNCODE": "2009",
+        "YEARS": item[9]
+      }, {
+        "HSNCODE": "2010",
+        "YEARS": item[10]
+      }, {
+        "HSNCODE": "2011",
+        "YEARS": item[11]
+      }, {
+        "HSNCODE": "2012",
+        "YEARS": item[12]
+      }, {
+        "HSNCODE": "2013",
+        "YEARS": item[13]
+      }, {
+        "HSNCODE": "2014",
+        "YEARS": item[14]
+      }, {
+        "HSNCODE": "2015",
+        "YEARS": item[15]
+      } , {
+        "HSNCODE": "2016",
+        "YEARS": item[16]
+      } 
+     ];
+      
+      // Add and configure Series
+      var pieSeries = chart.series.push(new am4charts.PieSeries());
+      pieSeries.dataFields.value = "YEARS";
+      pieSeries.dataFields.category = "HSNCODE";
+      pieSeries.slices.template.stroke = am4core.color("#fff");
+      pieSeries.slices.template.strokeWidth = 2;
+      pieSeries.slices.template.strokeOpacity = 1;
+      
+      // This creates initial animation
+      pieSeries.hiddenState.properties.opacity = 1;
+      pieSeries.hiddenState.properties.endAngle = -90;
+      pieSeries.hiddenState.properties.startAngle = -90;
+      
+      }); 
+
+*/
+         });
+         
+
+       } 
+      }
+    });
+      return false;  
+  },
+  minLength: 1
+  });
+  $('#divappenddata').empty();  
+  
+      
+        // Pushing the element into the array 
+   
+  //htmlpsr="";
+  var arr = []; 
+  $("#hsncode").keyup(function(){
+    $('#divappenddata').empty(); 
+    //var autoid = $(this).val();
+    var autoid = ''+($(this).val())+'%'; 
+    //alert(autoid);     
+    //$('#divappenddata').append(html);
+    var hsncodes = parseFloat($("#hsncode").val());  
+      console.log(hsncodes);
+    $.ajax({
+      url: '/ajaxcall_appendprs',
+      type: 'POST',
+      headers:{'x-CSRFToken':'{{ csrf_token }}'},
+      //contentType: 'application/json',
+      dataType: "json",
+      data: 
+      {
+       'hsncodes' :hsncodes
+      },
+      success: function(response) {
+        
+         // html += response.; 
+         $.map(response.hsn_codess, function(itempsr) { 
+          //htmlpsr[] = itempsr[5];
+          arr.push(itempsr[5]); 
+        });
+      }
+    });
+     
+
+
+
+
+     $.ajax({
+      url: '/ajaxcall_append',
+      type: 'POST',
+      headers:{'x-CSRFToken':'{{ csrf_token }}'},
+      //contentType: 'application/json',
+      dataType: "json",
+      data: 
+      {
+       'autoid' :JSON.stringify(autoid)
+      },
+      success: function(data1) {
+       console.log(arr[0]);
+      
+      //for(var i=0; i<1; i++){
+        console.log(arr)
+      //}
+
+
+
+
+
+
+       if (data1) {         
+         $.map(data1.hsn_code, function(item) {           //console.log(item[0]);     
+          
+
+
+          
+           var html = '<tr>';
+           //html += '<td>'+item[0]+'</td>';
+           html += '<td>'+item[1]+'</td>';
+           html += '<td>'+item[2]+'</td>';
+           html += '<td>'+item[3]+'</td>';
+           html += '<td style="width:50px !important;">'+item[5]+'</td>';
+           html += '<td>'+item[4]+'</td>';
+           html += '<td>';
+           var years = "<b>2006: </b>"+item[6]+"<br>"+"<b>2007: </b> "+item[7]+"<br>"+"<b>2008: </b>"+item[8]+"<br>"+"<b>2009: </b>"+item[9]+"<br>"+"<b>2010: </b>"+item[10]+
+           "<br>"+"<b>2011: </b>"+item[11]+"<br>"+"<b>2012: </b>"+item[12]+"<br>"+"<b>2013: </b>"+item[13]+"<br>"+"<b>2014: </b>"+item[14]+"<br>"+"<b>2015: </b>"+item[15]+"<br>"+"<b>2016: </b>"+item[16];
+           html += years+'</td>';
+           html += '<td>';
+            html +=arr;
+            html += '</td>'; 
+           //html += '<td style="width:100px !important;height:100px;"><div style="height: 100px !important;" id="chartdiv"></div></td>';
+           html += '</tr>';
+           
+          $('#divappenddata').append(html);
+/*
+          am4core.ready(function() {
+      
+      // Themes begin
+      am4core.useTheme(am4themes_animated);
+      // Themes end
+      
+      // Create chart instance
+      var chart = am4core.create("chartdiv", am4charts.PieChart);
+      
+      // Add data
+      
+      chart.data = [ {
+        "HSNCODE": "2006",
+        "YEARS": item[6]
+      }, {
+        "HSNCODE": "2007",
+        "YEARS": item[7]
+      }, {
+        "HSNCODE": "2008",
+        "YEARS": item[8]
+      }, {
+        "HSNCODE": "2009",
+        "YEARS": item[9]
+      }, {
+        "HSNCODE": "2010",
+        "YEARS": item[10]
+      }, {
+        "HSNCODE": "2011",
+        "YEARS": item[11]
+      }, {
+        "HSNCODE": "2012",
+        "YEARS": item[12]
+      }, {
+        "HSNCODE": "2013",
+        "YEARS": item[13]
+      }, {
+        "HSNCODE": "2014",
+        "YEARS": item[14]
+      }, {
+        "HSNCODE": "2015",
+        "YEARS": item[15]
+      } , {
+        "HSNCODE": "2016",
+        "YEARS": item[16]
+      } 
+     ];
+      
+      // Add and configure Series
+      var pieSeries = chart.series.push(new am4charts.PieSeries());
+      pieSeries.dataFields.value = "YEARS";
+      pieSeries.dataFields.category = "HSNCODE";
+      pieSeries.slices.template.stroke = am4core.color("#fff");
+      pieSeries.slices.template.strokeWidth = 2;
+      pieSeries.slices.template.strokeOpacity = 1;
+      
+      // This creates initial animation
+      pieSeries.hiddenState.properties.opacity = 1;
+      pieSeries.hiddenState.properties.endAngle = -90;
+      pieSeries.hiddenState.properties.startAngle = -90;
+      
+      }); 
+
+*/
+
+
+         });
+         
+
+       } 
+      }
+    });
+  
+  });
+
+
+});
+</script>
+
+<link rel="shortcut icon" href="{% static 'images/spklogo_login_spknet_Ogv_icon.ico' type='image/x-icon' %}">
+<link href="/static/csstest/csstest.css" rel="stylesheet" type="text/css" />
+<link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
+</head>
+<body class="sb-nav-fixed">
+
+<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="index.html"><img src="{% static 'images/midi.png' %}" class="logo_img"> MINISTRY OF INTERNATIONAL TRADE AND INDUSTRY</a>
+    <button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#"><i class="fas fa-bars"></i></button>
+    <!-- Navbar Search-->
+    <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
+        <div class="input-group">
+            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2" />
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </form>
+    <!-- Navbar-->
+    <ul class="navbar-nav ml-auto ml-md-0">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="userDropdown" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="#">Settings</a>
+                <a class="dropdown-item" href="#">Activity Log</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="login.html">Logout</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+<div id="layoutSidenav">
+    <div id="layoutSidenav_nav">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+            <div class="sb-sidenav-menu">
+                <div class="nav">
+                    <div class="sb-sidenav-menu-heading">Core</div>
+                    <a class="nav-link" href="index.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                        Dashboard
+                    </a>
+                    <div class="sb-sidenav-menu-heading">Interface</div>
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Layouts
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="layout-static.html">Static Navigation</a>
+                            <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                        <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                        Pages
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                Authentication
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="login.html">Login</a>
+                                    <a class="nav-link" href="register.html">Register</a>
+                                    <a class="nav-link" href="password.html">Forgot Password</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                                Error
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="401.html">401 Page</a>
+                                    <a class="nav-link" href="404.html">404 Page</a>
+                                    <a class="nav-link" href="500.html">500 Page</a>
+                                </nav>
+                            </div>
+                        </nav>
+                    </div>
+                    <div class="sb-sidenav-menu-heading">Addons</div>
+                    <a class="nav-link" href="charts.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                        Charts
+                    </a>
+                    <a class="nav-link" href="tables.html">
+                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                        Tables
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div id="layoutSidenav_content">
+        <main style="background-color:#f1f1f1;">
+            <div class="container-fluid">
+                <h1 class="mt-4">HSN Code</h1>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item">Dashboard </li>
+                    <li class="breadcrumb-item active">HSN</li>
+                </ol>
+                <div class="row">
+                 <label class="col-xl-2">Select the HSN code</label>
+                  <div class="col-xl-10"><form method="post">{% csrf_token %}
+                  <input class="form-control autocomplete" id="hsncode" placeholder="Select HSN Code" />
+                  </form></div>
+                 <div class="table-responsive" style="margin-top:30px;">
+                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th style="width:50px !important">
+                        Chapter
+                      </th>
+                      <th style="width:50px !important">                       
+                        HSN CODE
+                      </th>
+                      <th style="width:50px !important">
+                        HSN PDT CODE
+                      </th>
+                      <th style="width:50px !important">
+                        UNIT
+                      </th>
+                      <th style="width:200px !important">
+                        Description
+                      </th>
+                      <th style="width:100px !important;">
+                        years
+                      </th>
+                      <th style="width:100px !important;">
+                        PSR Specification
+                      </th>
+                    </tr>           
+                  </thead>
+                  <tbody id="divappenddata">
+                    
+                  </tbody>
+                  
+                </table> 
+                </div>  
+                </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">Copyright &copy; 2021</div>
+                    <div>
+                        <a href="#">Privacy Policy</a>
+                        &middot;
+                        <a href="#">Terms &amp; Conditions</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+</div>
+<!--<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script src="/static/assets/js/scripts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
+<script src="/static/assets/demo/chart-area-demo.js"></script>
+<script src="/static/assets/demo/chart-bar-demo.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
+<script src="/static/assets/demo/datatables-demo.js"></script>-->
+</body>
+</html>

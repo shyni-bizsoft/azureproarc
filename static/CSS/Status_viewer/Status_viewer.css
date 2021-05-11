@@ -1,0 +1,181 @@
+    input,button{
+      border: none;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      border-radius:20px;
+
+    }
+
+
+
+    
+    .Scroller 
+    {
+      display:block;
+      border: 1px;
+      padding:1px;
+      margin-top:5px;
+      width:1px;
+      height:50px;
+      overflow:auto;
+    }
+
+    #right-pane::-webkit-scrollbar-track
+    {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+      background-color: #F5F5F5;
+      border-radius: 10px;
+    }
+
+    #right-pane::-webkit-scrollbar
+    {
+      width: 10px;
+      background-color: #F5F5F5;
+    }
+
+    #right-pane::-webkit-scrollbar-thumb
+    {
+      border-radius: 10px;
+      background-color: #FFF;
+      background-image: -webkit-gradient(linear,
+     40% 0%,
+     75% 84%,
+     from(#4D9C41),
+     to(#19911D),
+     color-stop(.6,#54DE5D))
+    }
+
+
+    .ScrollStyle
+    {
+        max-height: 100px;
+        overflow-y: scroll;
+    }
+
+    html, body
+    {
+          height: 86.8%;
+          font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    }
+
+    .panes-container
+    {
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .left-pane
+    {            
+        width: 12%;
+    }
+
+    .panes-separator {
+      width: 10px;
+      background: rgb(250, 243, 130);
+      position: relative;
+      cursor: col-resize;
+    }
+
+    .right-pane 
+    {
+        flex: auto;
+    }
+
+    .panes-container,
+    .panes-separator,
+    .left-pane,
+    .right-pane 
+    {
+        margin: 0;
+        padding: 0;
+        height:100%;
+    }
+
+
+    .spk-page-title {
+        text-align: center;
+        font-size: 26px;
+        margin-top: -16px
+    }
+
+    .spk-leftSec {
+        width: 99%;
+        clear: both;
+        }
+
+table, th, td {
+  border-collapse: collapse;
+  border: 1px solid #000;
+}
+
+    /*.table1,
+    th,
+    td {
+      color: #000;
+      height: 100;
+      margin: auto;
+      font-size: 17px;
+      border: 1px solid #000;
+      border-collapse: collapse;
+      background-color: rgb(206, 234, 130);
+      vertical-align: middle;
+      text-align: center;
+    }
+
+   }*/
+
+    .infotable tr td{
+        border-collapse: collapse;
+        border: 0;
+    }
+
+    .collapsible {
+      background-color: #FFA07A;
+      color: white;
+      cursor: pointer;
+      padding: 5px;
+      width: 100%;
+      border: none;
+      text-align: left;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .active, .collapsible:hover {
+      background-color: #555;
+    }
+
+    .content {
+      padding: 0 18px;
+      display: block;
+      background-color: rgb(206, 234, 130);
+    }
+
+    .preloader1 {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: 9999;
+       background-image: url('/static/GIF/Wedges-3s-200px.gif');
+       background-repeat: no-repeat; 
+       background-color: #FFF;
+       background-position: center;
+    }
+
+    .preloader2 {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       z-index: 9999;
+       background-image: url('/static/GIF/Double Ring-1s-200px.gif');
+       background-repeat: no-repeat; 
+       background-color: #FFF;
+       background-position: center;
+    }
