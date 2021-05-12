@@ -116,7 +116,7 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
      console.log(autoid)
      //alert(autoid);
      $('#divappenddata').empty();     
-
+     $('#pdtsel_code').empty();
      $.ajax({
       url: '/ajaxcall_append',
       type: 'POST',
@@ -135,11 +135,42 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
 
            var html = '<tr>';
            //html += '<td>'+item[0]+'</td>';
-           html += '<td>'+item[1]+'</td>';
+          /* html += '<td>'+item[1]+'</td>';
            html += '<td>'+item[2]+'</td>';
            html += '<td>'+item[3]+'</td>';
            html += '<td>'+item[4]+'</td>';
-           html += '<td><div style="height: 100px !important;" id="chartdiv"></div></td>';
+            
+           html += '<td><div style="height: 100px !important;"></div></td>';*/
+           html += '<td>'+item[1]+'</td>';
+           html += '<td><a xhref="/single_trs" style="color:blue !important" onClick="call_sing('+item[0]+')"  id='+item[0]+'>'+item[2]+'</a></td>';
+           html += '<td>'+item[3]+'</td>';
+           html += '<td style="width:50px !important;">'+item[5]+'</td>';
+           html += '<td>'+item[4]+'</td>';
+           html += '<td>';
+            if(item[3]!=""){            
+            for(var j=6;j<=16;j++){
+              if((flg==0)){               
+                if(j<10)
+                {
+                  var raa = "0"
+                }
+                else{
+                  var raa = "";
+                }
+                var years = "20"+raa+[j]+": <b>"+item[j]+"</b><br>";
+                html += years;
+                if((item[j]==0)){
+                  flg=1;
+                }               
+              }             
+            }     
+            $('#pdtsel_code').append("<option value=\"" + item[0] + "\">" + item[2]+"-"+ item[3] + "</option>");
+           }
+          
+           html += '</td>';
+           html += '<td>';
+            html +=  item[18];
+            html += '</td>'; 
            html += '</tr>';
            
           $('#divappenddata').append(html);
@@ -217,13 +248,12 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
   },
   minLength: 1
   });
-  $('#divappenddata').empty();  
-  
+  $('#divappenddata').empty();   
       
-        // Pushing the element into the array 
-   
+  // Pushing the element into the array    
   //htmlpsr="";
   var arr = []; 
+ 
   $("#hsncode").keyup(function(){
     $('#divappenddata').empty(); 
     //var autoid = $(this).val();
@@ -231,7 +261,11 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
     //alert(autoid);     
     //$('#divappenddata').append(html);
     var hsncodes = parseFloat($("#hsncode").val());  
-      console.log(hsncodes);
+    console.log(hsncodes);
+    //var arr1 = []; 
+    if(hsncodes!=NaN)
+    {
+    var ht = "";
     $.ajax({
       url: '/ajaxcall_appendprs',
       type: 'POST',
@@ -242,20 +276,17 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
       {
        'hsncodes' :hsncodes
       },
-      success: function(response) {
-        
+      success: function(response) {        
          // html += response.; 
          $.map(response.hsn_codess, function(itempsr) { 
           //htmlpsr[] = itempsr[5];
-          arr.push(itempsr[5]); 
+         ht = (itempsr[5]); 
         });
       }
-    });
-     
-
-
-
-
+    });    
+  
+}
+    $('#pdtsel_code').empty();
      $.ajax({
       url: '/ajaxcall_append',
       type: 'POST',
@@ -267,36 +298,57 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
        'autoid' :JSON.stringify(autoid)
       },
       success: function(data1) {
-       console.log(arr[0]);
-      
+       console.log(arr[0]);      
       //for(var i=0; i<1; i++){
         console.log(arr)
       //}
 
 
-
-
-
-
        if (data1) {         
-         $.map(data1.hsn_code, function(item) {           //console.log(item[0]);     
-          
-
-
-          
+         $.map(data1.hsn_code, function(item) {           //console.log(item[0]);      
            var html = '<tr>';
            //html += '<td>'+item[0]+'</td>';
            html += '<td>'+item[1]+'</td>';
-           html += '<td>'+item[2]+'</td>';
+           html += '<td><a xhref="/single_trs" style="color:blue !important" onClick="call_sing('+item[0]+')" id='+item[0]+'>'+item[2]+'</a></td>';
            html += '<td>'+item[3]+'</td>';
            html += '<td style="width:50px !important;">'+item[5]+'</td>';
            html += '<td>'+item[4]+'</td>';
            html += '<td>';
+            var years="";
+            var flg =0; 
+            if(item[3]!=""){            
+            for(var j=6;j<=16;j++){
+              if((flg==0)){               
+                if(j<10)
+                {
+                  var raa = "0"
+                }
+                else{
+                  var raa = "";
+                }
+                var years = "20"+raa+[j]+": <b>"+item[j]+"</b><br>";
+                html += years;
+                if((item[j]==0)){
+                  flg=1;
+                }
+               
+              }
+             
+            }       
+            $('#pdtsel_code').append("<option value=\"" + item[0] + "\">" + item[2]+"-"+ item[3] + "</option>");
+           }
+         
+         /* if(item[3]!=""){            
            var years = "<b>2006: </b>"+item[6]+"<br>"+"<b>2007: </b> "+item[7]+"<br>"+"<b>2008: </b>"+item[8]+"<br>"+"<b>2009: </b>"+item[9]+"<br>"+"<b>2010: </b>"+item[10]+
            "<br>"+"<b>2011: </b>"+item[11]+"<br>"+"<b>2012: </b>"+item[12]+"<br>"+"<b>2013: </b>"+item[13]+"<br>"+"<b>2014: </b>"+item[14]+"<br>"+"<b>2015: </b>"+item[15]+"<br>"+"<b>2016: </b>"+item[16];
-           html += years+'</td>';
+          }
+          else{
+            years="";
+          }*/
+           html += '</td>';
            html += '<td>';
-            html +=arr;
+
+            html +=  item[18];
             html += '</td>'; 
            //html += '<td style="width:100px !important;height:100px;"><div style="height: 100px !important;" id="chartdiv"></div></td>';
            html += '</tr>';
@@ -377,8 +429,179 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
   
   });
 
-
+  $("#pdtsel_code").click(function () {
+        var endid = this.value;
+        //alert(endid);   
+       selchange(endid);
+ });
 });
+
+ function selchange(id){
+  //alert(id);
+  $('#divappenddata').empty(); 
+    //var autoid = $(this).val();
+    var autoid = id; 
+    //alert(autoid);     
+    //$('#divappenddata').append(html);
+    var hsncodes = parseFloat($("#hsncode").val());  
+    //console.log(hsncodes);
+    /*$.ajax({
+      url: '/ajaxcall_appendprs',
+      type: 'POST',
+      headers:{'x-CSRFToken':'{{ csrf_token }}'},
+      //contentType: 'application/json',
+      dataType: "json",
+      data: 
+      {
+       'hsncodes' :hsncodes
+      },
+      success: function(response) {        
+         // html += response.; 
+         $.map(response.hsn_codess, function(itempsr) { 
+          //htmlpsr[] = itempsr[5];
+          arr.push(itempsr[5]); 
+        });
+      }
+    });*/
+   var arr =[];
+     $.ajax({
+      url: '/ajaxcall_append_select',
+      type: 'POST',
+      headers:{'x-CSRFToken':'{{ csrf_token }}'},
+      //contentType: 'application/json',
+      dataType: "json",
+      data: 
+      {
+       'autoid' :JSON.stringify(autoid)
+      },
+      success: function(data1) {
+       console.log(arr[0]);      
+      //for(var i=0; i<1; i++){
+        console.log(arr)
+      //}
+       if (data1) {         
+         $.map(data1.hsn_code, function(item) {           //console.log(item[0]);      
+           var html = '<tr>';
+           //html += '<td>'+item[0]+'</td>';
+           html += '<td>'+item[1]+'</td>';
+           html += '<td><a xhref="/single_trs" style="color:blue !important" onClick="call_sing('+item[0]+')"  id='+item[0]+'>'+item[2]+'</a></td>';
+           html += '<td>'+item[3]+'</td>';
+           html += '<td style="width:50px !important;">'+item[5]+'</td>';
+           html += '<td>'+item[4]+'</td>';
+           html += '<td>';
+            var years="";
+            var flg =0; 
+            if(item[3]!=""){            
+            for(var j=6;j<=16;j++){
+              if((flg==0)){               
+                if(j<10)
+                {
+                  var raa = "0"
+                }
+                else{
+                  var raa = "";
+                }
+                var years = "20"+raa+[j]+": <b>"+item[j]+"</b><br>";
+                html += years;
+                if((item[j]==0)){
+                  flg=1;
+                }
+               
+              }
+             
+            }    
+
+            var hsncodes = parseFloat($("#hsncode").val());  
+           
+
+
+
+
+
+
+          //  $('#pdtsel_code').append("<option value=\"" + item[0] + "\">" + item[2]+"-"+ item[3] + "</option>");
+           }
+           html += '</td>';
+           html += '<td>';
+            //if(item[3]!=""){ 
+            $.ajax({
+            url: '/ajaxcall_appendprs',
+            type: 'POST',
+            headers:{'x-CSRFToken':'{{ csrf_token }}'},
+            //contentType: 'application/json',
+            dataType: "json",
+            data: 
+            {
+            'hsncodes' :$('#hsncode').val()
+            },
+            success: function(response) {     
+              console.log(item[2]);   
+              // html += response.; 
+              $.map(response.hsn_codess, function(itempsr) { 
+                console.log(itempsr[5]);
+                //htmlpsr[] = itempsr[5];
+                //html += itempsr[5];
+              });
+            }
+          });
+       // }
+
+
+       html +=  item[18];
+
+
+            //html +=arr;
+            html += '</td>'; 
+            
+           //html += '<td style="width:100px !important;height:100px;"><div style="height: 100px !important;" id="chartdiv"></div></td>';
+           html += '</tr>';
+           
+          $('#divappenddata').append(html);
+        });
+         
+
+       } 
+      }
+    });
+     
+}
+function fnExcelReport()
+{
+    var tab_text="<table border='2px'><tr bgcolor='#87AFC6'>";
+    var textRange; var j=0;
+    tab = document.getElementById('dataTable'); // id of table
+
+    for(j = 0 ; j < tab.rows.length ; j++) 
+    {     
+        tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
+        //tab_text=tab_text+"</tr>";
+    }
+
+    tab_text=tab_text+"</table>";
+    tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+    tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
+    tab_text= tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
+
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE "); 
+
+    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+    {
+        txtArea1.document.open("txt/html","replace");
+        txtArea1.document.write(tab_text);
+        txtArea1.document.close();
+        txtArea1.focus(); 
+        sa=txtArea1.document.execCommand("SaveAs",true,"Say Thanks to Sumit.xls");
+    }  
+    else                 //other browser not tested on IE 11
+        sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));  
+
+    return (sa);
+}
+function call_sing(id){
+//alert(id);
+window.location = "single_trs?pid="+id;
+}
 </script>
 
 <link rel="shortcut icon" href="{% static 'images/spklogo_login_spknet_Ogv_icon.ico' type='image/x-icon' %}">
@@ -408,77 +631,99 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
                 <a class="dropdown-item" href="#">Settings</a>
                 <a class="dropdown-item" href="#">Activity Log</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="login.html">Logout</a>
+                <a class="dropdown-item" href="/">Logout</a>
             </div>
         </li>
     </ul>
 </nav>
 <div id="layoutSidenav">
-    <div id="layoutSidenav_nav">
-        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-            <div class="sb-sidenav-menu">
-                <div class="nav">
-                    <div class="sb-sidenav-menu-heading">Core</div>
-                    <a class="nav-link" href="index.html">
-                        <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                        Dashboard
-                    </a>
-                    <div class="sb-sidenav-menu-heading">Interface</div>
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Layouts
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">Static Navigation</a>
-                            <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>
-                        </nav>
-                    </div>
-                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
-                        <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
-                        Pages
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
-                                Authentication
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="login.html">Login</a>
-                                    <a class="nav-link" href="register.html">Register</a>
-                                    <a class="nav-link" href="password.html">Forgot Password</a>
-                                </nav>
-                            </div>
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
-                                Error
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
-                                <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="401.html">401 Page</a>
-                                    <a class="nav-link" href="404.html">404 Page</a>
-                                    <a class="nav-link" href="500.html">500 Page</a>
-                                </nav>
-                            </div>
-                        </nav>
-                    </div>
-                    <div class="sb-sidenav-menu-heading">Addons</div>
-                    <a class="nav-link" href="charts.html">
-                        <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
-                        Charts
-                    </a>
-                    <a class="nav-link" href="tables.html">
-                        <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
-                        Tables
-                    </a>
+  <div id="layoutSidenav_nav">
+    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+            <div class="nav">
+                <div class="sb-sidenav-menu-heading">Core</div>
+                <a class="nav-link" href="/dashboard">
+                    <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    Dashboard
+                </a>
+                <div class="sb-sidenav-menu-heading">Duty Analysis</div>
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                    Duty Report
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="/master_trs">TRS & PSR Analysis</a>
+                       <!-- <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>-->
+                    </nav>
                 </div>
-            </div>
-        </nav>
-    </div>
+                <div class="sb-sidenav-menu-heading">Masters</div>
+                <a class="nav-link collapsed" href="/master_trs" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                    Chapter
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <a class="nav-link collapsed" href="/master_trs" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                    TRS
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <a class="nav-link collapsed" href="/master_trs" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                    <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                    PRS
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav">
+                        <a class="nav-link" href="/master_trs">TRS & PSR Analysis</a>
+                       <!-- <a class="nav-link" href="layout-sidenav-light.html">Light Sidenav</a>-->
+                    </nav>
+                </div>
+               <!-- <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                    <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                    Pages
+                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-parent="#sidenavAccordion">
+                    <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                            Authentication
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="login.html">Login</a>
+                                <a class="nav-link" href="register.html">Register</a>
+                                <a class="nav-link" href="password.html">Forgot Password</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+                            Error
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-parent="#sidenavAccordionPages">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link" href="401.html">401 Page</a>
+                                <a class="nav-link" href="404.html">404 Page</a>
+                                <a class="nav-link" href="500.html">500 Page</a>
+                            </nav>
+                        </div>
+                    </nav>
+                </div>
+                <div class="sb-sidenav-menu-heading">Addons</div>
+                <a class="nav-link" href="charts.html">
+                    <div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+                    Charts
+                </a>
+                <a class="nav-link" href="tables.html">
+                    <div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+                    Tables
+                </a>
+            </div>-->
+        </div>
+    </nav>
+</div>
     <div id="layoutSidenav_content">
         <main style="background-color:#f1f1f1;">
             <div class="container-fluid">
@@ -488,31 +733,48 @@ jQuery(document).ajaxSend(function(event, xhr, settings) {
                     <li class="breadcrumb-item active">HSN</li>
                 </ol>
                 <div class="row">
+                  <label class="col-xl-2">Select Country</label>
+                  <div class="col-xl-10">
+                  <select class="form-control">
+                    <option>Select Country Code</option>
+                    <option>MJEPA</option>
+                  </select>   
+                  </div>
+                  <br><br>
                  <label class="col-xl-2">Select the HSN code</label>
-                  <div class="col-xl-10"><form method="post">{% csrf_token %}
+                  <div class="col-xl-10">
+                    
+                    
+                    <form method="post">{% csrf_token %}
                   <input class="form-control autocomplete" id="hsncode" placeholder="Select HSN Code" />
+                  <label class="col-xl-2">Select Product code</label>
+                  <select class="form-control" id="pdtsel_code">
+                    <option>Select Product Code</option>
+                  </select>              
                   </form></div>
                  <div class="table-responsive" style="margin-top:30px;">
+                  <iframe id="txtArea1" style="display:none"></iframe>
+                  <button id="btnExport" onclick="fnExcelReport();"> <img style="width:50px;" src="{% static 'images/excel.png' %}" /> </button>
                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                   <thead>
                     <tr>
                       <th style="width:50px !important">
-                        Chapter
+                        CHAPTER
                       </th>
                       <th style="width:50px !important">                       
                         HSN CODE
                       </th>
                       <th style="width:50px !important">
-                        HSN PDT CODE
+                        PDT CODE
                       </th>
                       <th style="width:50px !important">
-                        UNIT
+                        Unit
                       </th>
                       <th style="width:200px !important">
                         Description
                       </th>
                       <th style="width:100px !important;">
-                        years
+                        TAX
                       </th>
                       <th style="width:100px !important;">
                         PSR Specification
