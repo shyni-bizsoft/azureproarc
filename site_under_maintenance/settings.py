@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'techinsig_midi',
         'USER': 'techinsig_midi',
         'PASSWORD': 'cn3qdUp3Q*P!',
-        'HOST': '103.145.50.139',
+        'HOST': '103.120.178.186',
         #'PORT': '2082',
     }
 }
